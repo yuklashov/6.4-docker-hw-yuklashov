@@ -200,3 +200,14 @@ volumes:
 ![График с метрикой yuklashov_am](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task11.png)
 
 ---
+
+### Задание 8
+
+Для остановки и удаления всех контейнеров одной командой использовалась следующая инструкция:
+
+```bash
+docker rm -f $(docker ps -aq)
+
+![Остановка и удаление контейнеров](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task13.png)
+
+---
