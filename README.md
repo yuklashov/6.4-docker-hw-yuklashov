@@ -123,3 +123,78 @@ volumes:
 ![Проверка статуса сервисов в Prometheus Targets](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task9.png)
 
 ---
+
+### Задание 7
+
+```yaml
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: yuklashov-am-netology-prometheus
+    restart: always
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - yuklashov-am-my-netology-hw
+    depends_on:
+      - pushgateway
+
+  pushgateway:
+    image: prom/pushgateway:v1.6.2
+    container_name: yuklashov-am-netology-pushgateway
+    restart: always
+    networks:
+      - yuklashov-am-my-netology-hw
+    ports:
+      - "9091:9091"
+
+  grafana:
+    image: grafana/grafana:10.1.5
+    container_name: yuklashov-am-netology-grafana
+    restart: always
+    environment:
+      - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+    ports:
+      - "80:3000"
+    volumes:
+      - ./grafana.ini:/etc/grafana/grafana.ini
+      - grafana_data:/var/lib/grafana
+    networks:
+      - yuklashov-am-my-netology-hw
+    depends_on:
+      - prometheus
+
+networks:
+  yuklashov-am-my-netology-hw:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+```
+
+Для выполнения задания была отправлена пользовательская метрика в Pushgateway, настроен Data Source в Grafana и построен график.
+
+1. Отправка метрики:
+`echo "yuklashov_am 5" | curl --data-binary @- http://localhost:9091/metrics/job/netology`
+
+2. Скриншот команды `docker ps`:
+![Результат docker ps](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task12.png)
+
+3. Скриншот метрики в Pushgateway:
+![Метрика в Pushgateway](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task10.png)
+
+4. Скриншот итогового графика в Grafana:
+![График с метрикой yuklashov_am](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task11.png)
