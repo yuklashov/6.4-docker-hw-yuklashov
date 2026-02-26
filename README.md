@@ -87,3 +87,26 @@ volumes:
 ---
 
 ### Задание 5
+
+### Задание 5
+
+В файл `docker-compose.yml` добавлен сервис Grafana:
+
+```yaml
+  grafana:
+    image: grafana/grafana:10.1.5
+    container_name: yuklashov-am-netology-grafana
+    restart: always
+    environment:
+      - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+    ports:
+      - "80:3000"
+    volumes:
+      - ./grafana.ini:/etc/grafana/grafana.ini
+      - grafana_data:/var/lib/grafana
+    networks:
+      - yuklashov-am-my-netology-hw
+
+```
+
+---
