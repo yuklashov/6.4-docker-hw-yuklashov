@@ -209,5 +209,3 @@ volumes:
 docker rm -f $(docker ps -aq)
 
 ![Остановка и удаление контейнеров](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task13.png)
-
----
