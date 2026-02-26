@@ -63,8 +63,8 @@ volumes:
 
 ### Задание 3
 
-![Конфигурация и запуск контейнера](img/task2.png)
-![Интерфейс Prometheus в браузере](img/task3.png)
+![Конфигурация и запуск контейнера](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task2.png)
+![Интерфейс Prometheus в браузере](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task3.png)
 
 ---
 
