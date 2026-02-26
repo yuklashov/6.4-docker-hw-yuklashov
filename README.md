@@ -110,3 +110,16 @@ volumes:
 ![Интерфейс Grafana в браузере](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task7.png)
 
 ---
+
+### Задание 6
+
+В итоговой конфигурации `docker-compose.yml` выполнены следующие настройки:
+1. Настроена поочередность запуска контейнеров с помощью директивы `depends_on` (Prometheus ждет Pushgateway, Grafana ждет Prometheus).
+2. Для всех контейнеров установлен режим автоматического перезапуска `restart: always`.
+3. Все сервисы объединены в одну внутреннюю сеть `yuklashov-am-my-netology-hw`.
+4. Запуск произведен в detached режиме (флаг `-d`).
+
+![Финальный запуск всех контейнеров в detached режиме](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task8.png)
+![Проверка статуса сервисов в Prometheus Targets](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task9.png)
+
+---
