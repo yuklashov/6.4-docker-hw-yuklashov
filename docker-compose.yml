@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  node_exporter:
+    image: prom/node-exporter:v1.6.1
+    container_name: node_exporter
+    networks:
+      - yuklashov-am-my-netology-hw
+
+networks:
+  yuklashov-am-my-netology-hw:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+
+volumes:
+  prometheus_data:
+  grafana_data:
