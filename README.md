@@ -57,6 +57,7 @@ volumes:
   # Объявляем тома для будущих заданий
   prometheus_data:
   grafana_data:
+```
 
 ---
 
