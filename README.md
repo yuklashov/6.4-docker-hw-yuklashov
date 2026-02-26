@@ -88,8 +88,6 @@ volumes:
 
 ### Задание 5
 
-### Задание 5
-
 В файл `docker-compose.yml` добавлен сервис Grafana:
 
 ```yaml
@@ -108,5 +106,7 @@ volumes:
       - yuklashov-am-my-netology-hw
 
 ```
+![Конфигурация и запуск Grafana](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task6.png)
+![Интерфейс Grafana в браузере](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task7.png)
 
 ---
