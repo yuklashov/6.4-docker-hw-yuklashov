@@ -82,7 +82,8 @@ volumes:
     ports:
       - "9091:9091"
 ```
-
+![Конфигурация и запуск контейнера](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task4.png)
+![Статус Pushgateway в Prometheus](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task5.png)
 ---
 
 ### Задание 5
