@@ -198,3 +198,5 @@ volumes:
 
 4. Скриншот итогового графика в Grafana:
 ![График с метрикой yuklashov_am](https://github.com/yuklashov/6.4-docker-hw-yuklashov/blob/main/img/task11.png)
+
+---
