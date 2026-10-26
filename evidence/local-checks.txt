@@ -1,0 +1,46 @@
+Проверка 27 октября 2026: локальный Go, не GitLab CI.
+
+$ go version
+go version go1.27.3 darwin/arm64
+
+exit=0
+
+$ gofmt -l main.go main_test.go
+
+exit=0
+
+$ go vet ./...
+
+exit=0
+
+$ go test -v ./...
+=== RUN   TestHello
+=== RUN   TestHello/world
+=== RUN   TestHello/Александр
+=== RUN   TestHello/#00
+--- PASS: TestHello (0.00s)
+    --- PASS: TestHello/world (0.00s)
+    --- PASS: TestHello/Александр (0.00s)
+    --- PASS: TestHello/#00 (0.00s)
+PASS
+ok  	netology.local/gitlab-hw	0.425s
+
+exit=0
+
+$ go build -trimpath -o /private/tmp/netology-gitlab-hello .
+
+exit=0
+
+$ /private/tmp/netology-gitlab-hello world
+Hello world!
+
+exit=0
+
+$ /private/tmp/netology-gitlab-hello
+2026/10/27 00:23:27 Missing name: hello <name>
+
+exit=1
+
+$ GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build
+
+exit=0

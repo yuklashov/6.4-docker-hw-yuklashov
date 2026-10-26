@@ -1,0 +1,77 @@
+[
+  {
+    "command": [
+      "go",
+      "version"
+    ],
+    "exit_code": 0,
+    "output": "go version go1.27.3 darwin/arm64\n"
+  },
+  {
+    "command": [
+      "gofmt",
+      "-l",
+      "main.go",
+      "main_test.go"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "go",
+      "test",
+      "-v",
+      "./..."
+    ],
+    "exit_code": 0,
+    "output": "=== RUN   TestHello\n=== RUN   TestHello/world\n=== RUN   TestHello/Александр\n=== RUN   TestHello/#00\n--- PASS: TestHello (0.00s)\n    --- PASS: TestHello/world (0.00s)\n    --- PASS: TestHello/Александр (0.00s)\n    --- PASS: TestHello/#00 (0.00s)\nPASS\nok  \tnetology.local/gitlab-hw\t0.425s\n"
+  },
+  {
+    "command": [
+      "go",
+      "build",
+      "-trimpath",
+      "-o",
+      "/private/tmp/netology-gitlab-hello",
+      "."
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "/private/tmp/netology-gitlab-hello",
+      "world"
+    ],
+    "exit_code": 0,
+    "output": "Hello world!\n"
+  },
+  {
+    "command": [
+      "/private/tmp/netology-gitlab-hello"
+    ],
+    "exit_code": 1,
+    "output": "2026/10/27 00:23:27 Missing name: hello <name>\n"
+  },
+  {
+    "command": [
+      "GOOS=linux",
+      "GOARCH=arm64",
+      "CGO_ENABLED=0",
+      "go",
+      "build"
+    ],
+    "exit_code": 0,
+    "output": ""
+  }
+]

@@ -1,0 +1,39 @@
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH'
+    - when: never
+
+stages:
+  - test
+  - build
+
+default:
+  image: golang:1.27.3
+  tags:
+    - docker
+  before_script:
+    - go version
+
+test:
+  stage: test
+  rules:
+    - changes:
+        - '*.go'
+        - '**/*.go'
+    - when: never
+  script:
+    - test -z "$(gofmt -l .)"
+    - go vet ./...
+    - go test -v ./...
+
+build:
+  stage: build
+  needs: []
+  script:
+    - mkdir -p dist
+    - CGO_ENABLED=0 GOOS=linux go build -trimpath -o dist/hello .
+    - test "$(dist/hello world)" = "Hello world!"
+  artifacts:
+    paths:
+      - dist/hello
+    expire_in: 7 days
