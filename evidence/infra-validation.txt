@@ -1,0 +1,35 @@
+27 октября 2026
+Terraform 1.14.9, yandex-cloud/yandex 0.240.0
+terraform fmt -check: passed
+terraform validate: passed
+cloud-init YAML parse: passed
+terraform plan: passed
+[
+  {
+    "address": "yandex_compute_instance.gitlab",
+    "actions": [
+      "create"
+    ]
+  },
+  {
+    "address": "yandex_vpc_network.lab",
+    "actions": [
+      "create"
+    ]
+  },
+  {
+    "address": "yandex_vpc_security_group.lab",
+    "actions": [
+      "create"
+    ]
+  },
+  {
+    "address": "yandex_vpc_subnet.lab",
+    "actions": [
+      "create"
+    ]
+  }
+]
+Все четыре изменения — create. Нет update/delete существующих ресурсов.
+Apply не выполнялся: денежный лимит ожидает подтверждения.
+Секреты, tfvars и полный план находятся только в исключённой из Git .local/.

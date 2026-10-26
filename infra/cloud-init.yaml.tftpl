@@ -1,0 +1,34 @@
+#cloud-config
+users:
+  - name: ubuntu
+    groups: [sudo]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${jsonencode(ssh_public_key)}
+ssh_pwauth: false
+disable_root: true
+write_files:
+  - path: /etc/systemd/system/netology-lab-poweroff.service
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=Power off temporary Netology GitLab lab
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/sbin/poweroff
+  - path: /etc/systemd/system/netology-lab-poweroff.timer
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=Limit each boot of the temporary lab to six hours
+      [Timer]
+      OnBootSec=6h
+      AccuracySec=1min
+      Unit=netology-lab-poweroff.service
+      [Install]
+      WantedBy=timers.target
+runcmd:
+  - [systemctl, daemon-reload]
+  - [systemctl, enable, --now, netology-lab-poweroff.timer]

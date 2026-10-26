@@ -3,3 +3,10 @@
 /.env
 /runner-config/
 *.token
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/*.tfvars
+**/crash.log
+/.local/
