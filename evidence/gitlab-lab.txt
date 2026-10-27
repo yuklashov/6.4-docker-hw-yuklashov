@@ -76,6 +76,6 @@ $ CGO_ENABLED=0 GOOS=linux go build -trimpath -o dist/hello .
 $ test "$(dist/hello world)" = "Hello world!"
 Uploading artifacts for successful job
 Uploading artifacts...
-dist/hello: found 1 matching artifact files and directories 
+dist/hello: found 1 matching artifact files and directories
 Uploading artifacts as "archive" to coordinator... 201 Created  id=5 status=201
 Job succeeded
