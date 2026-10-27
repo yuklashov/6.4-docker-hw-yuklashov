@@ -9,6 +9,46 @@ users:
       - ${jsonencode(ssh_public_key)}
 ssh_pwauth: false
 disable_root: true
+bootcmd:
+  - |
+    printf 'Port 22\nPort 443\n' > /etc/ssh/sshd_config.d/80-netology-ports.conf
+    systemctl daemon-reload
+    systemctl --no-block restart ssh.socket
+    exec >/dev/ttyS0 2>&1
+    echo "=== NETOLOGY-DIAG early $(date -u +%FT%TZ) ==="
+    echo "--- previous bootstrap output (/nohup.out) ---"
+    tail -n 40 /nohup.out 2>/dev/null || echo "no /nohup.out"
+    echo "--- /root ---"
+    ls -la /root/
+    echo "--- firewall ---"
+    iptables -S 2>/dev/null | head -20
+    nft list ruleset 2>/dev/null | head -20
+    ufw status 2>/dev/null
+    echo "=== NETOLOGY-DIAG early end ==="
+    setsid /bin/bash -c '
+      sleep 45
+      exec >/dev/ttyS0 2>&1
+      echo "=== NETOLOGY-DIAG late $(date -u +%FT%TZ) ==="
+      cloud-init status --long 2>&1 | head -6
+      echo "--- listeners ---"
+      ss -lntp
+      echo "--- ssh units ---"
+      systemctl is-active ssh.socket ssh.service
+      systemctl cat ssh.socket 2>/dev/null | grep -i listen
+      journalctl -b -u ssh.socket -u ssh.service --no-pager | tail -15
+      echo "--- net ---"
+      ip -4 addr show eth0 | grep inet
+      ip route
+      curl -sI --max-time 10 https://packages.gitlab.com | head -1 || echo "outbound FAILED"
+      echo "--- tcpdump SYN watch 15 min ---"
+      timeout 900 tcpdump -nn -l -i any "tcp[tcpflags] & tcp-syn != 0 and tcp[tcpflags] & tcp-ack == 0 and (dst port 22 or dst port 443 or dst port 2222)" 2>&1 | head -80
+      echo "=== NETOLOGY-DIAG late end ==="
+    ' </dev/null >/dev/null 2>&1 &
+    if [ ! -f /root/netology-bootstrap.complete ]; then
+      echo '${base64encode(bootstrap_script)}' | base64 -d > /root/netology-bootstrap.sh
+      chmod 700 /root/netology-bootstrap.sh
+      setsid /bin/bash -c '/bin/bash /root/netology-bootstrap.sh 2>&1 | tee -a /root/netology-bootstrap.log > /dev/ttyS0' </dev/null >/dev/null 2>&1 &
+    fi
 write_files:
   - path: /etc/systemd/system/netology-lab-poweroff.service
     permissions: '0644'
@@ -22,9 +62,9 @@ write_files:
     permissions: '0644'
     content: |
       [Unit]
-      Description=Limit each boot of the temporary lab to six hours
+      Description=Limit each boot of the temporary lab to four hours
       [Timer]
-      OnBootSec=6h
+      OnBootSec=4h
       AccuracySec=1min
       Unit=netology-lab-poweroff.service
       [Install]

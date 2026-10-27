@@ -1,0 +1,81 @@
+Свидетельства GitLab-стенда, 27 октября 2026 (MSK = UTC+3). Токены и адреса стенда не публикуются.
+
+== GitLab ==
+GitLab CE 19.5.1 revision 449ed2875c2
+Установка: пакет gitlab-ce из официального репозитория packages.gitlab.com на Ubuntu 24.04 (Yandex Cloud VM 2 vCPU / 8 GiB, временный стенд). external_url http://127.0.0.1:18080, доступ через SSH-туннель.
+
+== Проект ==
+path: root/sdvps-materials | visibility: private | default_branch: main | http_url_to_repo: http://127.0.0.1:18080/root/sdvps-materials.git | created: 2026-10-27T05:00:41.803Z
+Проект создавался пустым (initialize_with_readme=false, empty_repo=true до первого push).
+
+== Runner (API) ==
+id: 1 | description: netology-docker-runner | type: project_type | tags: ['docker'] | run_untagged: False | online: True | status: online | version: 19.5.1 | platform: linux amd64
+runner config.toml (без токена):
+concurrent = 2
+  name = "netology-docker-runner"
+  url = "http://127.0.0.1:18080"
+  executor = "docker"
+    image = "golang:1.27.3"
+    memory = "2g"
+    cpus = "1"
+    privileged = false
+    volumes = ["/cache"]
+    network_mode = "host"
+gitlab-runner: Version:      19.5.1
+runner container: gitlab/gitlab-runner:alpine Up 7 minutes
+
+== Рабочая копия учебного репозитория ==
+github	https://github.com/yuklashov/sdvps-materials.git (fetch)
+github	https://github.com/yuklashov/sdvps-materials.git (push)
+origin	http://127.0.0.1:18080/root/sdvps-materials.git (fetch)
+origin	http://127.0.0.1:18080/root/sdvps-materials.git (push)
+cd4be0f Document the hello function (Go change triggers tests)
+823bd94 Document the GitLab lab in README (docs-only change)
+4aefbe0 Add GitLab CI pipeline and table-driven tests for the Netology lab
+223dbc3 Update README.md
+
+== Pipelines ==
+pipeline 1 status=success ref=main sha=4aefbe09 source=push created=2026-10-27T05:01:46.639Z duration=71s
+  job #1 test  stage=test  status=success  queued=5.442854 started=2026-10-27T05:01:55.744Z finished=2026-10-27T05:03:07.411Z dur=71.7s runner=netology-docker-runner
+  job #2 build stage=build status=success  queued=4.791162 started=2026-10-27T05:01:56.734Z finished=2026-10-27T05:02:49.317Z dur=52.6s runner=netology-docker-runner
+pipeline 2 status=success ref=main sha=823bd94d source=push created=2026-10-27T05:04:31.126Z duration=34s
+  job #3 build stage=build status=success  queued=2.983006 started=2026-10-27T05:04:34.539Z finished=2026-10-27T05:05:09.447Z dur=34.9s runner=netology-docker-runner
+pipeline 3 status=success ref=main sha=cd4be0f5 source=push created=2026-10-27T05:05:30.399Z duration=65s
+  job #4 test  stage=test  status=success  queued=0.348576 started=2026-10-27T05:05:31.551Z finished=2026-10-27T05:06:36.747Z dur=65.2s runner=netology-docker-runner
+  job #5 build stage=build status=success  queued=0.6629 started=2026-10-27T05:05:31.968Z finished=2026-10-27T05:06:16.347Z dur=44.4s runner=netology-docker-runner
+
+Pipeline 1: первый push ветки main (go.mod, main.go, main_test.go, .gitlab-ci.yml) — test и build стартовали с разницей ~1 с, build не ждала test (needs: []).
+Pipeline 2: push только README.md — job test пропущена правилом rules:changes (*.go), выполнена только build.
+Pipeline 3: push с изменением main.go — снова test и build, обе успешны.
+
+== Фрагмент журнала job test (pipeline 3, job #4) ==
+Running with gitlab-runner 19.5.1 (f411f264)
+Using Docker executor with image golang:1.27.3 ...
+Using docker image sha256:9048d5e7751706200eb1719c7dae0436950d362f29a1da91fa05e5c63867c60f for golang:1.27.3 with digest golang@sha256:9048d5e7751706200eb1719c7dae0436950d362f29a1da91fa05e5c63867c60f ...
+Using docker image sha256:9048d5e7751706200eb1719c7dae0436950d362f29a1da91fa05e5c63867c60f for golang:1.27.3 with digest golang@sha256:9048d5e7751706200eb1719c7dae0436950d362f29a1da91fa05e5c63867c60f ...
+$ go version
+go version go1.27.3 linux/amd64
+=== RUN   TestHello
+=== RUN   TestHello/world
+=== RUN   TestHello/Александр
+=== RUN   TestHello/#00
+--- PASS: TestHello (0.00s)
+    --- PASS: TestHello/world (0.00s)
+    --- PASS: TestHello/Александр (0.00s)
+    --- PASS: TestHello/#00 (0.00s)
+Job succeeded
+
+== Фрагмент журнала job build (pipeline 3, job #5) ==
+Running with gitlab-runner 19.5.1 (f411f264)
+Using Docker executor with image golang:1.27.3 ...
+Using docker image sha256:9048d5e7751706200eb1719c7dae0436950d362f29a1da91fa05e5c63867c60f for golang:1.27.3 with digest golang@sha256:9048d5e7751706200eb1719c7dae0436950d362f29a1da91fa05e5c63867c60f ...
+Using docker image sha256:9048d5e7751706200eb1719c7dae0436950d362f29a1da91fa05e5c63867c60f for golang:1.27.3 with digest golang@sha256:9048d5e7751706200eb1719c7dae0436950d362f29a1da91fa05e5c63867c60f ...
+$ go version
+go version go1.27.3 linux/amd64
+$ CGO_ENABLED=0 GOOS=linux go build -trimpath -o dist/hello .
+$ test "$(dist/hello world)" = "Hello world!"
+Uploading artifacts for successful job
+Uploading artifacts...
+dist/hello: found 1 matching artifact files and directories 
+Uploading artifacts as "archive" to coordinator... 201 Created  id=5 status=201
+Job succeeded

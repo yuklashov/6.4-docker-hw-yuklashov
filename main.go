@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// hello builds the greeting printed by the CLI.
 func hello(name string) string {
 	return fmt.Sprintf("Hello %s!", name)
 }

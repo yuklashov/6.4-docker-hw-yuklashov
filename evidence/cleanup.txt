@@ -1,0 +1,7 @@
+27 октября 2026. Очистка временного GitLab-стенда.
+
+Terraform destroy plan проверен: удаление только yandex_compute_instance.gitlab и yandex_vpc_security_group.lab. boot_disk.auto_delete=true.
+Terraform apply сохранённого destroy-плана завершился успешно.
+Yandex Cloud readback: временная VM — not found; её загрузочный диск — not found.
+Исходные сети/подсети и прежняя monitoring VM в этот Terraform-план не входили.
+Скриншоты, журналы и исходный код сохранены до удаления; приватная Git bundle проверена командой git bundle verify.

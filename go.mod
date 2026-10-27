@@ -1,3 +1,3 @@
-module netology.local/gitlab-hw
+module github.com/netology-code/sdvps-materials
 
-go 1.27.0
+go 1.16

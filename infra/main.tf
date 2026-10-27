@@ -11,7 +11,7 @@ terraform {
 # Authentication comes from YC_TOKEN; do not write tokens into tfvars.
 provider "yandex" {
   folder_id = var.folder_id
-  zone      = "ru-central1-a"
+  zone      = "ru-central1-d"
 }
 
 variable "folder_id" {
@@ -22,34 +22,43 @@ variable "ssh_public_key" {
   type = string
 }
 
-variable "operator_cidr" {
+variable "operator_cidrs" {
   description = "Current operator public IPv4 with /32; only SSH is exposed."
-  type        = string
+  type        = list(string)
   validation {
-    condition     = can(cidrhost(var.operator_cidr, 0)) && endswith(var.operator_cidr, "/32")
+    condition     = length(var.operator_cidrs) > 0 && alltrue([for c in var.operator_cidrs : can(cidrhost(c, 0)) && endswith(c, "/32")])
     error_message = "Provide the operator IPv4 /32."
   }
 }
 
-resource "yandex_vpc_network" "lab" {
-  name = "netology-gitlab-lab"
+variable "subnet_id" {
+  description = "Existing subnet to reuse without modifying its configuration."
+  type        = string
 }
 
-resource "yandex_vpc_subnet" "lab" {
-  name           = "netology-gitlab-lab-a"
-  zone           = "ru-central1-a"
-  network_id     = yandex_vpc_network.lab.id
-  v4_cidr_blocks = ["10.77.10.0/24"]
+data "yandex_vpc_subnet" "shared" {
+  subnet_id = var.subnet_id
 }
 
 resource "yandex_vpc_security_group" "lab" {
   name       = "netology-gitlab-lab-ssh"
-  network_id = yandex_vpc_network.lab.id
+  network_id = data.yandex_vpc_subnet.shared.network_id
   ingress {
     protocol       = "TCP"
     port           = 22
-    v4_cidr_blocks = [var.operator_cidr]
+    v4_cidr_blocks = var.operator_cidrs
     description    = "Operator SSH and local HTTP tunnel"
+  }
+  ingress {
+    protocol       = "TCP"
+    port           = 443
+    v4_cidr_blocks = var.operator_cidrs
+    description    = "Alternative SSH transport for operator routes"
+  }
+  ingress {
+    protocol       = "ICMP"
+    v4_cidr_blocks = var.operator_cidrs
+    description    = "Operator reachability diagnostics"
   }
   egress {
     protocol       = "ANY"
@@ -61,13 +70,13 @@ resource "yandex_compute_instance" "gitlab" {
   name        = "netology-gitlab-lab"
   hostname    = "netology-gitlab-lab"
   platform_id = "standard-v3"
-  zone        = "ru-central1-a"
+  zone        = "ru-central1-d"
   labels = {
     purpose    = "netology-gitlab"
     disposable = "true"
   }
   resources {
-    cores         = 4
+    cores         = 2
     core_fraction = 100
     memory        = 8
   }
@@ -76,18 +85,19 @@ resource "yandex_compute_instance" "gitlab" {
     initialize_params {
       name     = "netology-gitlab-lab-boot"
       image_id = "fd8a30ptg5tdapq35dlb"
-      type     = "network-ssd"
-      size     = 60
+      type     = "network-hdd"
+      size     = 20
     }
   }
   network_interface {
-    subnet_id          = yandex_vpc_subnet.lab.id
+    subnet_id          = data.yandex_vpc_subnet.shared.id
     nat                = true
     security_group_ids = [yandex_vpc_security_group.lab.id]
   }
   metadata = {
     user-data = templatefile("${path.module}/cloud-init.yaml.tftpl", {
-      ssh_public_key = trimspace(var.ssh_public_key)
+      ssh_public_key   = trimspace(var.ssh_public_key)
+      bootstrap_script = file("${path.module}/bootstrap-gitlab.sh")
     })
   }
 }
